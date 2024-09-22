@@ -50,7 +50,7 @@ export default function Home() {
             setDialogues(dialogues1);
             setCheckDialogues(checkDialogues1);
     }
-    if (currentDialogueIndex !== 0) {
+    if (currentDialogueIndex !== -1) {
       setCurrentDialogueIndex(-1); // Reset the dialogue index when scenario changes
     }
 };
