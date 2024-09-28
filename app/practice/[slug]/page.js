@@ -2,6 +2,7 @@
 import { checkDialogues1, checkDialogues2, checkDialogues3, dialogues1, dialogues2, dialogues3 } from "@/utils/dialogues";
 import levenshtein from "js-levenshtein";
 import Image from "next/image";
+import Link from "next/link";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import React, {useEffect, useState, useRef} from "react";
 
@@ -17,6 +18,7 @@ export default function Page({ params }) {
   const [allowContinue, setAllowContinue] = useState(false);
   const scrollableSectionRef = useRef(null);
   const [speaking, setSpeaking] = useState(false);
+  const [highlightedSpeech, setHighlightedSpeech] = useState(``);
   const threshold = 3;
   const slug = params.slug
   useEffect(() => {
@@ -92,8 +94,9 @@ export default function Page({ params }) {
       recognition.onresult = function(event) {
           const speechResult = event.results[0][0].transcript;
           setUserSpeech(speechResult);
+          console.log(speechResult.trim().toLowerCase(), checkDialogues[currentDialogueIndex][1].toLowerCase())
 
-          if (checkDialogue(speechResult, checkDialogues[currentDialogueIndex][1])) {
+          if (checkDialogue(speechResult.trim().toLowerCase(), checkDialogues[currentDialogueIndex][1].toLowerCase())) {
               setIsCorrect(true);
               setAllowContinue(true);
               playAudio("/audios/success.mp3")
@@ -122,6 +125,24 @@ export default function Page({ params }) {
       
   };
 
+  function highlightDifferences(original, detected) {
+    const maxLength = Math.max(original.length, detected.length);
+    console.log(original, detected)
+
+    let highlighted = ``;
+
+    for (let i = 0; i < maxLength; i++) {
+      if (original[i] == detected[i]) {
+        highlighted += detected[i]
+      }
+      else {
+        highlighted += `<span class="text-red-500">${original[i]}</span>`
+      }
+    }
+    console.log(highlighted)
+
+    return highlighted;
+}
 
     const playAudio = (audioSrc) => {
       const audio = new Audio(audioSrc);
@@ -131,16 +152,20 @@ export default function Page({ params }) {
     const checkDialogue = (speechResult, expectedDialogue) => {
         const distance = levenshtein(speechResult, expectedDialogue);
 
-    if (distance <= threshold) {
-        return true; // Accept the response
-    } else {
-        return false; // Ask the user to try again
-    }
-    };
+        // if (currentDialogueIndex >= 0) {
+        //   setHighlightedSpeech(highlightDifferences(checkDialogues[currentDialogueIndex][1].toLowerCase(), userSpeech.trim().toLowerCase()))
+        // }
+        // console.log(highlightedSpeech)
+        // if (highlightedSpeech !== "") {
+        //   document.getElementById("output").innerHTML = highlightedSpeech;
+        // }
 
-    // const startRecognition = () => {
-    //     recognition.start();
-    // };
+        if (distance <= threshold) {
+            return true; // Accept the response
+        } else {
+            return false; // Ask the user to try again
+        }
+    };
 
     const proceedToNext = () => {
       if (currentDialogueIndex < dialogues.length - 1) {
@@ -155,12 +180,13 @@ export default function Page({ params }) {
       }
   };
 
+
   return (
     <main className="bg-white py-1 xl:py-3 h-screen text-black overflow-x-hidden">
       <SnackbarProvider dense />
       <div className="w-full flex flex-col space-y-1 lg:space-y-2 xl:space-y-3 items-center justify-center">
-        <span className="text-[#036A8C] font-extrabold text-lg md:text-xl xl:text-2xl">DeutschNow</span>
-        <div className={`${slug === "scenario1" && "bg-[url('/banner1.jpeg')]"} ${slug === "scenario2" && "bg-[url('/banner2.jpeg')]"} ${slug === "scenario3" && "bg-[url('/banner3.jpeg')]"} h-56 !mb-2 sm:h-64 lg:h-72 w-screen bg-bottom md:bg-center bg-cover bg-no-repeat bg-fixed`}></div>
+        <Link href={"/"}><span className="text-[#036A8C] font-extrabold text-lg md:text-xl xl:text-2xl">DeutschNow</span></Link>
+        <div className={`${slug === "scenario1" && "bg-[url('/banner1.jpeg')]"} ${slug === "scenario2" && "bg-[url('/banner2.jpeg')]"} ${slug === "scenario3" && "bg-[url('/banner3.jpeg')]"} h-56 !mb-2 sm:h-64 lg:h-72 w-screen bg-center md:bg-center bg-cover bg-no-repeat md:bg-fixed`}></div>
         <div className="w-[90%] !mt-2 sm:w-[80%] md:w-[70%] flex flex-col items-center justify-center shadow-[#00000017] shadow-lg drop-shadow-lg rounded-lg">
           <div className="bg-[#036A8C] text-white text-xs sm:text-base rounded-t-lg px-3 py-1 xl:p-3 w-full lg:text-lg z-10">
             {slug === "scenario1" && <span>Buying a Train Ticket in Germany</span>}
@@ -171,7 +197,7 @@ export default function Page({ params }) {
           <div className="overflow-y-scroll w-full space-y-3 rounded-2xl p-3 h-60 sm:h-52 md:h-48 xl:h-60" ref={scrollableSectionRef}>
             {currentDialogueIndex < 0 && <div className="flex flex-col space-y-2 items-center justify-center w-full h-full">
               <button onClick={proceedToNext} className="bg-green-500 rounded-3xl py-2 px-4 text-white">Start</button>
-              <span className="max-w-[80%] text-center">
+              <span className="max-w-[80%] text-center text-sm sm:text-base">
                 Practice speaking German with real life scenarios. Speak your lines to keep the conversation going.
               </span>
             </div>}
@@ -206,7 +232,7 @@ export default function Page({ params }) {
                                 </button>
                                 <span className="text-xs sm:text-base lg:text-lg">{dialogue[1]}</span>
                               </div>
-                              <span className="text-[10px] sm:text-sm">{dialogue[2]}</span>
+                              <span className="text-[10px] sm:text-sm text-center">{dialogue[2]}</span>
                               {currentDialogueIndex < dialogues.length && dialogue[0] === "You" && index === currentDialogueIndex && (
                 <div className="user-input flex items-center justify-center flex-col space-y-1">
                   {userSpeech !== "" && isCorrect ? null : <button onClick={startRecognition} className="rounded-3xl p-2 px-4 bg-[#036A8C] text-white flex items-center justify-center space-x-2 text-xs">
@@ -216,7 +242,7 @@ export default function Page({ params }) {
                         {userSpeech !== "" && !isCorrect && "Speak Again"}
                       </span>
                   </button>}
-                  <p className="text-xs sm:text-sm">{userSpeech ? `Detected Speech: ${userSpeech}` : ""}</p>
+                  <p className="text-xs sm:text-sm">{userSpeech ? `Detected speech: ${userSpeech}` : ""}</p>
                   {/* {userSpeech !== "" && isCorrect ? <p>✅ Correct</p> : <p>❌ Try Again</p>} */}
                 </div>
             )}
@@ -228,7 +254,7 @@ export default function Page({ params }) {
                 <div ref={lastTextRef} />  
             </div>
 
-            {currentDialogueIndex > dialogues.length - 2 && <span className="px-3 py-1 sm:py-2 text-green-500 text-center text-[10px] sm:text-xs md:text-sm border-t border-green-500">Success!!!<br/>You&apos;ve practiced your speaking skills at {slug === "scenario1" && "a metro/railway station."} {slug === "scenario2" && "an airport."} {slug === "scenario3" && "an airport."} You&apos;re now better equipped to handle {slug === "scenario1" && "enquiring for train tickets in german."} {slug === "scenario2" && "immigration process in german."} {slug === "scenario3" && "lost luggage search at an airport in german."}</span>}
+            {currentDialogueIndex > 0 && currentDialogueIndex > dialogues.length - 2 && <span className="px-3 py-1 sm:py-2 text-green-500 text-center text-[10px] sm:text-xs md:text-sm border-t border-green-500">Success!!!<br/>You&apos;ve practiced your speaking skills at {slug === "scenario1" && "a metro/railway station."} {slug === "scenario2" && "an airport."} {slug === "scenario3" && "an airport."} You&apos;re now better equipped to handle {slug === "scenario1" && "enquiring for train tickets in german."} {slug === "scenario2" && "immigration process in german."} {slug === "scenario3" && "lost luggage search at an airport in german."}</span>}
             
           {currentDialogueIndex > -1 && currentDialogueIndex < dialogues.length - 1 && 
           <div className="border-t border-[#D9D9D9] w-full flex items-center justify-center z-10 py-2">

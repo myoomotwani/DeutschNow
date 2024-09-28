@@ -14,12 +14,12 @@ function Home() {
           </span>
           <Link href={"/practice/scenario1"}>
             <div className='bg-gradient-to-r p-2 rounded-3xl bg-clip-border border-2 from-green-400 to-cyan-400'>
-              <span className='w-full rounded-xl p-1 px-2 bg-white hover:bg-gradient-to-r from-green-400 to-cyan-400 hover:text-white'>Scenario 1: Buying a Train Ticket in Germany</span>
+              <span className='w-full rounded-xl p-1 px-2 bg-white hover:bg-gradient-to-r from-green-400 to-cyan-400 hover:text-white'>Scenario 1: Buying a Train Ticket</span>
             </div>
           </Link>
           <Link href={"/practice/scenario2"}>
             <div className='bg-gradient-to-r p-2 rounded-3xl bg-clip-border border-2 from-cyan-400 to-green-400'>
-              <span className='w-full rounded-xl p-1 px-2 bg-white hover:bg-gradient-to-r from-cyan-400 to-green-400 hover:text-white'>Scenario 2: Going Through Immigration in Germany</span>
+              <span className='w-full rounded-xl p-1 px-2 bg-white hover:bg-gradient-to-r from-cyan-400 to-green-400 hover:text-white'>Scenario 2: Going Through Immigration</span>
             </div>
           </Link>
           <Link href={"/practice/scenario3"}>
