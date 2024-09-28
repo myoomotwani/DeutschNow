@@ -19,6 +19,7 @@ export default function Page({ params }) {
   const scrollableSectionRef = useRef(null);
   const [speaking, setSpeaking] = useState(false);
   const [highlightedSpeech, setHighlightedSpeech] = useState(``);
+  // const [userVoice, setUserVoice] = useState()
   const threshold = 3;
   const slug = params.slug
   useEffect(() => {
@@ -53,12 +54,12 @@ export default function Page({ params }) {
       alert('Please enter some text');
       return;
     }
+    const voices = window.speechSynthesis.getVoices();
+    const germanVoices = voices.filter(voice => voice.lang.startsWith('de'));
 
     // Create a new SpeechSynthesisUtterance instance
     const utterance = new SpeechSynthesisUtterance(text);
-
-    // Set language to German (de-DE)
-    utterance.lang = 'de-DE';
+    utterance.lang = dialogues[currentDialogueIndex + 1][0] === "Seller" ? "de-CH" : "de-AT";
 
     // Set up event listeners to monitor speech progress
     utterance.onstart = () => {
