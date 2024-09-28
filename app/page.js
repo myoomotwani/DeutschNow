@@ -6,7 +6,7 @@ function Home() {
     <main className="bg-white py-1 xl:py-3 h-screen text-black overflow-x-hidden">
       <div className="w-full flex flex-col space-y-1 lg:space-y-2 xl:space-y-3 items-center justify-center">
         <span className="text-[#036A8C] font-extrabold text-lg md:text-xl xl:text-2xl">DeutschNow</span>
-        <div className="bg-[url('/banner11.png')] h-56 !mb-2 sm:h-60 lg:h-72 w-screen bg-bottom md:bg-center bg-cover bg-no-repeat md:bg-fixed"></div>
+        <div className="bg-[url('/banner11.png')] h-56 !mb-2 sm:h-60 lg:h-72 w-screen bg-top md:bg-center bg-cover bg-no-repeat md:bg-fixed"></div>
         <div className='flex flex-col sm:pt-4 space-y-5 items-center justify-center w-full'>
           <span className='text-center pb-3 border-b border-b-cyan-500'>
             <span className='text-base sm:text-lg'>German speaking practice</span> <br/>
